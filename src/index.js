@@ -1,5 +1,7 @@
 import { app } from "./app.js";
 import dotenv from "dotenv";
+import { connectToDB } from "./db/dbConnect.js";
+import logger from "./logger/logger.js";
 
 dotenv.config({
   path: "./.env",
@@ -7,4 +9,10 @@ dotenv.config({
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => console.log(`listening on port ${port}`));
+connectToDB().then((result) => {
+  if (result) {
+    app.listen(port, () => logger.info(`listening at port ${port}`));
+  } else {
+    process.exit(1);
+  }
+});
