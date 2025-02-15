@@ -19,7 +19,6 @@ app.use(
   morgan(morganFormat, {
     stream: {
       write: (message) => {
-        console.log("message: ", message);
         const logObject = {
           method: message.split(" ")[0],
           url: message.split(" ")[1],
@@ -33,5 +32,11 @@ app.use(
 );
 
 app.use(express.json());
+
+// health router
+
+import heathRouter from "./routes/health.routes.js";
+
+app.use("/api/v1/health", heathRouter);
 
 export { app };
