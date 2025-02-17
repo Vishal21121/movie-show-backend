@@ -15,9 +15,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .from(users, toCamelCase)
     .where(eq(users.email, email));
   if (Array.isArray(isEmailExists) && isEmailExists.length > 0) {
-    return res
-      .status(400)
-      .json(new ApiResponse(400, null, "User with this email already exists"));
+    throw new ApiError(400, "User with this email already exists");
   }
 
   const isusernameExists = await db
@@ -26,11 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
     .where(eq(users.username, username));
 
   if (Array.isArray(isusernameExists) && isusernameExists.length > 0) {
-    return res
-      .status(400)
-      .json(
-        new ApiResponse(400, null, "User with this username already exists")
-      );
+    throw new ApiError(400, "User with this username already exists");
   }
 
   const hashedPassword = await hashPassword(password);
@@ -50,9 +44,7 @@ const registerUser = asyncHandler(async (req, res) => {
       isEmailVerified: users.isEmailVerified,
     });
   if (!userInserted) {
-    return res
-      .status(500)
-      .json(new ApiResponse(500, null, "Failed to insert user"));
+    throw new ApiError(500, "Failed to insert user");
   }
   return res
     .status(201)
