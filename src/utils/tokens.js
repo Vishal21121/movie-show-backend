@@ -1,15 +1,15 @@
 import jwt from "jsonwebtoken";
 import { db } from "../db/dbConnect.js";
-import { users } from "../schema/users.sql";
+import { users } from "../schema/users.sql.js";
 import { eq } from "drizzle-orm";
 
-const generateRefreshToken = async (id, email, username) => {
+const generateRefreshToken = (id, email, username) => {
   return jwt.sign({ id, email, username }, process.env.REFRESH_TOKEN_SECRET, {
     expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
   });
 };
 
-const generateAccessToken = async (id) => {
+const generateAccessToken = (id) => {
   return jwt.sign({ id }, process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
   });
@@ -21,7 +21,6 @@ const generateTokensAndUpdate = async (userId) => {
     .from(users)
     .where(eq(users.id, userId))
     .limit(1);
-  console.log("userFound", userFound);
   if (!userFound || userFound.length === 0) {
     throw new Error("User does not exist");
   }
@@ -31,12 +30,12 @@ const generateTokensAndUpdate = async (userId) => {
     userFound.email,
     userFound.password
   );
-  const updatedUserId = await db
+  const [updatedUser] = await db
     .update(users)
-    .set({ refresh_token: refreshToken })
+    .set({ refreshToken: refreshToken.substring(0, 49) })
     .where(eq(users.id, userId))
-    .returning({ updatedId: users.id });
-  if (updatedUserId) {
+    .returning();
+  if (updatedUser.id) {
     return { accessToken, refreshToken };
   }
   return null;
