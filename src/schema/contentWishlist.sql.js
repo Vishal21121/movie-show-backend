@@ -4,14 +4,19 @@ import {
   pgTable,
   serial,
   varchar,
+  uuid,
 } from "drizzle-orm/pg-core";
+import { users } from "./users.sql.js";
 
 const contentWishlist = pgTable("contentWishlist", {
-  id: serial().primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   contentId: integer(),
   title: varchar({ length: 100 }),
   imageUrl: varchar(),
   contentType: varchar({ length: 100 }),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id),
 });
 
 export { contentWishlist };

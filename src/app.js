@@ -44,6 +44,10 @@ import userRouter from "./routes/user.routes.js";
 
 app.use("/api/v1/user", userRouter);
 
+import wishListRouter from "./routes/wishlist.routes.js";
+
+app.use("/api/v1/wishlist", wishListRouter);
+
 app.use(errorHandler);
 
 export { app };
