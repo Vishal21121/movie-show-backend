@@ -5,7 +5,10 @@ let db;
 
 const connectToDB = async () => {
   try {
-    db = drizzle(process.env.DATABASE_URL);
+    db = drizzle({
+      connection: process.env.DATABASE_URL,
+      casing: "snake_case",
+    });
     const result = await db.execute("select 1");
     return result ? true : false;
   } catch (error) {

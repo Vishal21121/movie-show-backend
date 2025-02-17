@@ -12,10 +12,12 @@
   "description": "",
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
+    "bcryptjs": "^3.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.39.3",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "winston": "^3.17.0"
   },
