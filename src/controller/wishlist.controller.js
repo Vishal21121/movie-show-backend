@@ -34,6 +34,40 @@ const addContent = asyncHandler(async (req, res) => {
 });
 
 // get all contents
-// delete content
+const getAllContents = asyncHandler(async (req, res) => {
+  const allContents = await db.select().from(contentWishlist);
+  return res
+    .status(200)
+    .json(new ApiResponse(200, allContents, "Content fetched successfully"));
+});
 
-export { addContent };
+// delete content
+const deleteContent = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+  if (!id) {
+    throw new ApiError(400, "Please provide id of the content");
+  }
+
+  const [isContentFound] = await db
+    .select()
+    .from(contentWishlist)
+    .where(eq(contentWishlist.id, id))
+    .limit(1);
+
+  if (!isContentFound) {
+    throw new ApiError(400, "Provided id is invalid");
+  }
+
+  const [deletedContent] = await db
+    .delete(contentWishlist)
+    .where(eq(contentWishlist.id, id))
+    .returning();
+  if (!deletedContent) {
+    throw new ApiError(500, "Failed to delete the content");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, deletedContent, "Content deleted successfully"));
+});
+
+export { addContent, getAllContents, deleteContent };

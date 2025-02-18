@@ -9,10 +9,15 @@ dotenv.config({
 
 const port = process.env.PORT || 3000;
 
-connectToDB().then((result) => {
-  if (result) {
-    app.listen(port, () => logger.info(`listening at port ${port}`));
-  } else {
+connectToDB()
+  .then((result) => {
+    if (result) {
+      app.listen(port, () => logger.info(`listening at port ${port}`));
+    } else {
+      process.exit(1);
+    }
+  })
+  .catch((error) => {
+    logger.error("Error connecting to database");
     process.exit(1);
-  }
-});
+  });
