@@ -1,4 +1,4 @@
-import { body } from "express-validator";
+import { body, query } from "express-validator";
 
 const contentType = ["movie", "tv"];
 
@@ -34,4 +34,22 @@ const addContentValidator = () => {
   ];
 };
 
-export { addContentValidator };
+const getContentValidator = () => {
+  return [
+    query("userId").trim().notEmpty().withMessage("userId is required"),
+    query("page")
+      .trim()
+      .notEmpty()
+      .withMessage("page is required")
+      .isNumeric()
+      .withMessage("page should be a number"),
+    query("limit")
+      .trim()
+      .notEmpty()
+      .withMessage("limit is required")
+      .isNumeric()
+      .withMessage("limit should be a number"),
+  ];
+};
+
+export { addContentValidator, getContentValidator };
