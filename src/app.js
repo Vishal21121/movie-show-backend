@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import logger from "./logger/logger.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+import cookieParser from "cookie-parser";
 
 const morganFormat = ":method :url :status :response-time ms";
 const app = express();
@@ -33,6 +34,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 // health router
 
