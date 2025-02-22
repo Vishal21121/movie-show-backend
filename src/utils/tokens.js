@@ -32,7 +32,7 @@ const generateTokensAndUpdate = async (userId) => {
   );
   const [updatedUser] = await db
     .update(users)
-    .set({ refreshToken: refreshToken.substring(0, 49) })
+    .set({ refreshToken: refreshToken })
     .where(eq(users.id, userId))
     .returning();
   if (updatedUser.id) {

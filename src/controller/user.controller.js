@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 import { toCamelCase } from "drizzle-orm/casing";
 import { ApiError } from "../utils/ApiError.js";
 import { generateTokensAndUpdate } from "../utils/tokens.js";
+import jwt from "jsonwebtoken";
 
 const registerUser = asyncHandler(async (req, res) => {
   const { username, email, password } = req.body;
@@ -101,4 +102,46 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser };
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const gotRefreshToken = req.cookies?.refreshToken;
+  if (!gotRefreshToken) {
+    throw new ApiError(401, "Refresh token is not provided");
+  }
+  const decodedRefreshToken = jwt.verify(
+    gotRefreshToken,
+    process.env.REFRESH_TOKEN_SECRET
+  );
+  const [userGot] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, decodedRefreshToken?.id))
+    .limit(1);
+  if (!userGot) {
+    throw new ApiError(401, "Invalid refresh Token");
+  }
+  if (gotRefreshToken !== userGot.refreshToken) {
+    throw new ApiError(401, "Referesh token is expired or used");
+  }
+  const tokens = generateTokensAndUpdate(userGot.id);
+  if (!tokens) {
+    throw new ApiError(500, "Failed to generate access token");
+  }
+  const options = {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true,
+    maxAge: 2 * 24 * 60 * 60 * 1000,
+  };
+  return res
+    .status(200)
+    .cookie("refreshToken", tokens.refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        { accessToken: tokens.accessToken, userData: userGot },
+        "access token refereshed successfully"
+      )
+    );
+});
+
+export { registerUser, loginUser, refreshAccessToken };

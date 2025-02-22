@@ -5,7 +5,7 @@ const users = pgTable("users", {
   username: varchar({ length: 20 }),
   email: varchar({ length: 50 }),
   password: varchar({ length: 50 }),
-  refreshToken: varchar({ length: 50 }),
+  refreshToken: varchar(),
   isEmailVerified: boolean().default(false),
 });
 

@@ -21,8 +21,6 @@ const verifyJWT = asyncHandler(async (req, res, next) => {
     .where(eq(users.id, decodedToken?.id))
     .limit(1);
 
-  console.log(userFound);
-
   if (!userFound) {
     throw new ApiError(401, "Token is invalid");
   }

@@ -1,5 +1,8 @@
-import { validationResult } from "express-validator";
-import { loginUser, registerUser } from "../controller/user.controller.js";
+import {
+  loginUser,
+  refreshAccessToken,
+  registerUser,
+} from "../controller/user.controller.js";
 import express from "express";
 import {
   userLoginValidator,
@@ -11,5 +14,6 @@ const router = express.Router();
 
 router.route("/create").post(userRegisterValidator(), validator, registerUser);
 router.route("/login").post(userLoginValidator(), validator, loginUser);
+router.route("/refresh-token").get(refreshAccessToken);
 
 export default router;
