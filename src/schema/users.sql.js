@@ -4,7 +4,7 @@ const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   username: varchar({ length: 20 }),
   email: varchar({ length: 50 }),
-  password: varchar({ length: 50 }),
+  password: varchar(),
   refreshToken: varchar(),
   isEmailVerified: boolean().default(false),
 });

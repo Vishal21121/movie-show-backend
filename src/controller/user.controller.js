@@ -65,7 +65,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Please provide valid credentials");
   }
   // verify password
-  const isCorrect = isPasswordCorrect(password, userFound[0].password);
+  const isCorrect = await isPasswordCorrect(password, userFound[0].password);
   if (!isCorrect) {
     throw new ApiError(401, "Please provide valid credentials");
   }
