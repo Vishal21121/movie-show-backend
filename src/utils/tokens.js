@@ -16,12 +16,12 @@ const generateAccessToken = (id) => {
 };
 
 const generateTokensAndUpdate = async (userId) => {
-  const userFound = await db
+  const [userFound] = await db
     .select()
     .from(users)
     .where(eq(users.id, userId))
     .limit(1);
-  if (!userFound || userFound.length === 0) {
+  if (!userFound) {
     throw new Error("User does not exist");
   }
   const accessToken = generateAccessToken(userId);

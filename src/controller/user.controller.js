@@ -86,8 +86,9 @@ const loginUser = asyncHandler(async (req, res) => {
     .where(eq(users.email, email));
   const options = {
     httpOnly: true,
-    sameSite: "none",
-    secure: true,
+    sameSite: "lax",
+    // secure: process.env.NODE_ENV === "production",
+    secure: false,
     maxAge: 2 * 24 * 60 * 60 * 1000,
   };
   return res
@@ -122,16 +123,18 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   if (gotRefreshToken !== userGot.refreshToken) {
     throw new ApiError(401, "Referesh token is expired or used");
   }
-  const tokens = generateTokensAndUpdate(userGot.id);
+  const tokens = await generateTokensAndUpdate(userGot.id);
   if (!tokens) {
     throw new ApiError(500, "Failed to generate access token");
   }
   const options = {
     httpOnly: true,
-    sameSite: "none",
-    secure: true,
+    sameSite: "lax", // use none or strict in production
+    // secure: process.env.NODE_ENV === "production",
+    secure: false, // if strict or none use true
     maxAge: 2 * 24 * 60 * 60 * 1000,
   };
+  // maxAge: 2 * 24 * 60 * 60 * 1000,
   return res
     .status(200)
     .cookie("refreshToken", tokens.refreshToken, options)

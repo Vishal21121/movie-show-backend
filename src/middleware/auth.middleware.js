@@ -6,9 +6,11 @@ import { users } from "../schema/users.sql.js";
 import { eq } from "drizzle-orm";
 
 const verifyJWT = asyncHandler(async (req, res, next) => {
-  const token =
-    req.cookies?.accessToken ||
-    req.header("Authorization")?.replace("Bearer ", "");
+  const wholeToken = req.header("Authorization");
+  let token = null;
+  if (wholeToken.split(" ").length > 1) {
+    token = wholeToken.split(" ")[1];
+  }
   if (!token) {
     throw new ApiError(401, "Unauthorized request");
   }
