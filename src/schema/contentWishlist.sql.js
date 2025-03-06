@@ -13,6 +13,7 @@ const contentWishlist = pgTable("contentWishlist", {
   contentId: integer(),
   title: varchar({ length: 100 }),
   imageUrl: varchar(),
+  description: varchar(),
   contentType: varchar({ length: 100 }),
   userId: uuid("userId")
     .notNull()

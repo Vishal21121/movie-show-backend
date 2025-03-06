@@ -8,7 +8,8 @@ import { contentWishlist } from "../schema/contentWishlist.sql.js";
 
 // add content
 const addContent = asyncHandler(async (req, res) => {
-  const { contentId, title, imageUrl, contentType, userId } = req.body;
+  const { contentId, title, imageUrl, contentType, userId, description } =
+    req.body;
   const [userFound] = await db
     .select()
     .from(users)
@@ -17,10 +18,13 @@ const addContent = asyncHandler(async (req, res) => {
   if (!userFound) {
     throw new ApiError(400, "Please provide a valid user Id");
   }
+
+  // before inserting add condition for checking whether it has been added previosly or not
+
   // insert the content
   const [contentInserted] = await db
     .insert(contentWishlist)
-    .values({ contentId, title, imageUrl, contentType, userId })
+    .values({ contentId, title, imageUrl, contentType, userId, description })
     .returning();
   if (!contentInserted) {
     throw new ApiError(500, "Failed to insert the content");
@@ -78,15 +82,15 @@ const getContentPaginated = asyncHandler(async (req, res) => {
 
 // delete content
 const deleteContent = asyncHandler(async (req, res) => {
-  const { id } = req.body;
-  if (!id) {
+  const { contentId } = req.body;
+  if (!contentId) {
     throw new ApiError(400, "Please provide id of the content");
   }
 
   const [isContentFound] = await db
     .select()
     .from(contentWishlist)
-    .where(eq(contentWishlist.id, id))
+    .where(eq(contentWishlist.contentId, contentId))
     .limit(1);
 
   if (!isContentFound) {
@@ -95,7 +99,7 @@ const deleteContent = asyncHandler(async (req, res) => {
 
   const [deletedContent] = await db
     .delete(contentWishlist)
-    .where(eq(contentWishlist.id, id))
+    .where(eq(contentWishlist.contentId, contentId))
     .returning();
   if (!deletedContent) {
     throw new ApiError(500, "Failed to delete the content");
